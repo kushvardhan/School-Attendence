@@ -3,6 +3,54 @@ const bcrypt = require("bcrypt")
 const router = express.Router();
 const { AsyncTryCatchHandler } = require("../../utils/async-handler");
 
+router.post(
+  "/register",
+  AsyncTryCatchHandler(async (req, res) => {
+    const { name, email, password, rollNo } = req.body;
+
+    if (!name || !email || !password || !rollNo) {
+      return res.status(400).json({
+        error: "All fields data are required",
+      });
+    }
+
+    const userAlreadyExist = await User.findOne({ email });
+    if (userAlreadyExist) {
+      return res.status(400).json({
+        error: "User already exists",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      rollNo,
+    });
+
+    if (!newUser) {
+      return res.status(400).json({
+        error: "Error while registering user",
+      });
+    }
+
+    req.session.user = {
+      id: newUser._id,
+      email: newUser.email,
+    };
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        rollNo: newUser.rollNo,
+      },
+    });
+  })
+);
 
 router.post(
   "/login",
