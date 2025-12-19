@@ -1,5 +1,5 @@
 const express = require("express");
-const { AsyncHandler } = require("./utils/async-handler");
+const { AsyncTryCatchHandler } = require("./utils/async-handler");
 const authRoute = require("./routes/auth/auth.js");
 
 const app = express();
@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 8000;
 
 app.use("/auth", authRoute);
 
-app.get("/",AsyncHandler(async (req,res)=>{
+app.get("/",AsyncTryCatchHandler(async (req,res)=>{
     res.send("YO !!👋❤")
 }));
 

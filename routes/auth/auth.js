@@ -1,12 +1,13 @@
 const express = require("express");
-const { AsyncHandler } = require("../../utils/async-handler");
 const bcrypt = require("bcrypt")
-const Router = express.Router();
+const router = express.Router();
+const { AsyncTryCatchHandler } = require("../../utils/async-handler");
+
 
 router.post(
   "/login",
   authMiddleWare,
-  AsyncHandler(async (req, res) => {
+  AsyncTryCatchHandler(async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -33,5 +34,12 @@ router.post(
     });
   })
 );
+
+router.post("/logout",AsyncTryCatchHandler(async(req,res)=>{
+    req.session.destroy(() => {
+    res.clearCookie("user-session");
+    res.status(200).json({ message: "Logged out successfully" });
+  });
+}))
 
 module.exports = router;
