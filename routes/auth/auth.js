@@ -2,9 +2,12 @@ const express = require("express");
 const bcrypt = require("bcrypt")
 const router = express.Router();
 const { AsyncTryCatchHandler } = require("../../utils/async-handler");
+const validate = require("../../middlewares/validate");
+const { registerSchema, loginSchema } = require("../../validator/auth.schema");
 
 router.post(
   "/register",
+  validate(registerSchema),
   AsyncTryCatchHandler(async (req, res) => {
     const { name, email, password, rollNo } = req.body;
 
@@ -55,6 +58,7 @@ router.post(
 router.post(
   "/login",
   authMiddleWare,
+  validate(loginSchema),
   AsyncTryCatchHandler(async (req, res) => {
     const { email, password } = req.body;
 
