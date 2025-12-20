@@ -9,8 +9,7 @@ const registerSchema = z.object({
     email: z
       .string()
       .email("Invalid email")
-      .max(100)
-      .transform((val) => val.toLowerCase().trim()),
+      .max(100),
     
     password: z
         .string()
@@ -22,8 +21,24 @@ const registerSchema = z.object({
         .regex(/[^a-zA-Z0-9]/, "Must contain special char"),
     rollNo: z
       .string()
-      .min(3)
       .max(20)
-      .transform(sanitizeString)
       .regex(/^[a-zA-Z0-9-]+$/, "Invalid roll number"),
 })
+
+const loginSchema = z
+  .object({
+    email: z
+      .string()
+      .email(),
+
+    password: z
+      .string()
+      .min(8)
+      .max(64),
+  })
+  .strict();
+
+module.exports = {
+  registerSchema,
+  loginSchema,
+};
